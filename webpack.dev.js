@@ -3,7 +3,7 @@
 const path = require('path');
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-
+const CleanWebpackPlugin = clean-webpack-plugin
 const htmlPlugs = new HtmlWebpackPlugin({
     template: path.join(__dirname, './src/index.html'),
     filename: 'index.html'
@@ -43,7 +43,8 @@ const config = {
     },
     plugins: [
         htmlPlugs,
-        hotServer
+        hotServer,
+        new CleanWebpackPlugin()
     ],
     devServer: {
         contentBase: path.join(__dirname, './dist'),
@@ -53,5 +54,3 @@ const config = {
     // production
 };
 module.exports = config;
-
-console.log(process.env.NODE_ENV)

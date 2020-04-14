@@ -3,10 +3,26 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCSSAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
+const cssPlugin = new OptimizeCSSAssetsWebpackPlugin({
+    assetNameRegExp: /\.css$/g,
+    cssProcessor: require('cssnano')
+})
 const htmlPlugs = new HtmlWebpackPlugin ({
     template: path.join(__dirname, './src/index.html'),
-    filename: 'index_[contenthash:8].html'
+    filename: 'index_[contenthash:8].html',
+    chunks: ['index'],
+    inject: true,
+    minify: {
+        html5: true,
+        collapseWhitespace: true,
+        preserveLineBreaks: true,
+        minifyCSS: true,
+        minifyJS: true,
+        removeComments: false
+    }
 })
 
 const miniCss = new MiniCssExtractPlugin ({
@@ -61,7 +77,9 @@ const config = {
     },
     plugins: [
         htmlPlugs,
-        miniCss
+        miniCss,
+        cssPlugin,
+        new CleanWebpackPlugin()
     ],
     mode: 'production',
     // development

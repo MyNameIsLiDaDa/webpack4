@@ -398,3 +398,49 @@ webpack还有一个重要的模块就是图片解析了.我们来看看怎么解
     "dev": "webpack-dev-server --config webpack.dev.js --open",
 
 此时很多代码重复, 可以参考vue2.x的-cli 理解整合;
+
+# 关于打包后的压缩问题
+
+首先js代码可以不用管他, 因为webpack4里面内置了uglifyjs-webpack-plugin在打包时候自动给js做了压缩;
+
+css压缩呢! 我们需要安装个plugin
+
+ `npm install optimize-css-assets-webpack-plugin -D `
+
+` npm i cssnano -D`
+
+    const OptimizeCSSAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
+    const cssPlugin = new OptimizeCSSAssetsWebpackPlugin({
+    	assetNameRegExp: /\.css$/g, // 容易写错;
+    	cssProcessor: require('cssnano')
+    })
+记得挂着到module.exports 中的plugins中;css到此为止;
+
+其实html代码压缩,只要使用了html-webpack-plugin就可以实现了;
+
+`npm install html-webpack-plugin -D`
+
+    const htmlPlugs = new HtmlWebpackPlugin ({
+      template: path.join(__dirname, './src/index.html'),
+      filename: 'index_[contenthash:8].html',
+      chunks: ['index'], // 配置chunks
+      inject: true, // 打包后是否将css注入html中;
+      minify: {
+          html5: true,
+          collapseWhitespace: true,
+          preserveLineBreaks: true,
+          minifyCSS: true,
+          minifyJS: true,
+          removeComments: false
+      }
+    })
+# 关于自动清除dist目录下的文件
+
+每次打包完后, 如果dist下面有文件就会老文件和新文件混在一起,`clean-webpack-plugin`
+
+这个插件可以很好的解决这个问题, ` npm install clean-webpack-plugin -D`
+
+只需要在plugins挂载即可,  这里有个坑要踩一下, 引入的时候这样写:
+
+`const { CleanWebpackPlugin } = require('clean-webpack-plugin')`
+
